@@ -1,0 +1,11 @@
+@model Project
+@{ Kitchen? kitchen=ViewBag.Kitchen; }
+<p class="small"><a href="/portfolio">← Все проекты</a></p><h1>@Model.Name</h1><p class="muted">@Model.Summary</p>
+<div class="grid">
+    <div class="wide">@foreach(string image in Site.Gallery(Model.Image,Model.Gallery)) { <a class="block" href="@Site.Image(image)" target="_blank" rel="noopener"><img class="detail-photo" src="@Site.Image(image)" alt="@Model.Name" width="1000" height="700"></a> }</div>
+    <div class="third"><dl class="specs"><div><dt>Город</dt><dd>@Model.City</dd></div><div><dt>Площадь</dt><dd>@Model.Area</dd></div><div><dt>Срок</dt><dd>@Model.Duration</dd></div></dl>
+        @if(kitchen!=null) { <p>Модель: <a href="/kitchen?id=@kitchen.Id">@kitchen.Name</a></p> }
+        <a class="button" href="/calculator@(kitchen!=null?"?model="+kitchen.Id:"")">Рассчитать похожую кухню</a>
+    </div>
+</div>
+<h2 >О проекте</h2><p>@Html.Raw(Site.Lines(Model.Description))</p>

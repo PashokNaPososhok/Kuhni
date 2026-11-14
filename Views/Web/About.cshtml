@@ -1,0 +1,5 @@
+<h1>О компании</h1>
+<div class="grid">
+    <div class="half"><img class="detail-photo" src="@Site.Image(Db.Setting("about_image"))" alt="Кухня и рабочая зона" width="900" height="700"></div>
+    <div class="half"><h2>@Html.Raw(Site.Lines(Db.Setting("about_title")))</h2><p>@Db.Setting("about_text")</p><h3 class="heading-small">Наша история</h3><p>@Html.Raw(Site.Lines(Db.Setting("about_history")))</p><h3 class="heading-small">Наша задача</h3><p>@Html.Raw(Site.Lines(Db.Setting("about_mission")))</p></div>
+</div>

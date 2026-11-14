@@ -1,0 +1,22 @@
+@model Kitchen
+@{ var config=Calculator.ForKitchen(Model,Db.Pricing); var projects=(List<Project>)ViewBag.Projects; }
+<p class="small"><a href="/catalog">← В каталог</a></p>
+<div class="grid">
+    <div class="wide">@foreach(string image in Site.Gallery(Model.Image,Model.Gallery)) { <a class="block" href="@Site.Image(image)" target="_blank" rel="noopener"><img class="detail-photo" src="@Site.Image(image)" alt="Кухня @Model.Name" width="1000" height="700"></a> }</div>
+    <div class="narrow">
+        <h1>@Model.Name</h1><p class="muted">@Model.Style</p><p>@Html.Raw(Site.Lines(Model.Description))</p>
+        <dl class="specs">
+            <div><dt>Планировка</dt><dd>@Site.Shape(config.Shape)</dd></div><div><dt>Длина</dt><dd>@config.Length м</dd></div>
+            @if(config.Shape!="straight") { <div><dt>Ширина</dt><dd>@config.Width м</dd></div> }
+            @if(config.Shape=="u") { <div><dt>Вторая длина</dt><dd>@config.ReturnLength м</dd></div> }
+            @foreach(var category in Db.Pricing.Categories)
+            {
+                string selected=config.Materials.GetValueOrDefault(category.Key, "");
+                <div><dt>@category.Value.Name</dt><dd>@(category.Value.Options.TryGetValue(selected,out var option)?option.Label:"—")</dd></div>
+            }
+        </dl>
+        <p class="heading-small">от @Site.Money(Calculator.Price(Model,Db.Pricing))</p>
+        <a class="button" href="/calculator?model=@Model.Id">Рассчитать по своим размерам</a><p class="small muted">Материалы и комплектация этой модели уже будут выбраны.</p>
+    </div>
+</div>
+@if(projects.Count>0) { <section ><h2>Эта кухня в проектах</h2><div class="grid">@foreach(var project in projects) { <div class="half"><partial name="_Project" model="project" /></div> }</div></section> }

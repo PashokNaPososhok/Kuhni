@@ -1,0 +1,3 @@
+@model List<Project>
+<h1>@Db.Setting("portfolio_title")</h1><p class="muted">@Db.Setting("portfolio_text")</p>
+<div class="grid">@foreach(var project in Model) { <div class="half"><partial name="_Project" model="project" /></div> }</div>

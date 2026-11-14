@@ -1,0 +1,16 @@
+@model List<Review>
+<h1>@Db.Setting("reviews_title")</h1>
+<div class="grid">
+    <div class="wide">@foreach(var review in Model) { <div><partial name="_Review" model="review" /></div> } @if(Model.Count==0) { <p>Опубликованных отзывов пока нет.</p> }</div>
+    <div class="narrow">
+        <form class="box" method="post" action="/actions/review">
+            @Html.AntiForgeryToken()
+            <h2 class="heading-small">Оставить отзыв</h2><p class="small muted">Вход не нужен. Отзыв появится после проверки.</p>
+            <div class="honeypot" aria-hidden="true"><input name="Website" tabindex="-1" autocomplete="off" aria-label="Сайт"></div>
+            <label class="block">Ваше имя<input name="Name" minlength="2" maxlength="80" required></label>
+            <label class="block">Оценка<select name="Rating">@for(int i=5;i>=1;i--) { <option value="@i">@i из 5</option> }</select></label>
+            <label class="block">Отзыв<textarea name="Text" rows="5" minlength="10" maxlength="2000" required></textarea></label>
+            <button class="button">Отправить отзыв</button>
+        </form>
+    </div>
+</div>

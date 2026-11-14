@@ -1,0 +1,6 @@
+@model Review
+<article class="box stretch">
+    <div class="inline between"><strong>@Model.Name</strong><span class="small muted">@Model.CreatedAt.ToString("dd.MM.yyyy")</span></div>
+    <p class="small">Оценка: @Model.Rating из 5</p>
+    <p >@Model.Text</p>
+</article>

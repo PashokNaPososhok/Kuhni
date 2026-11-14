@@ -1,0 +1,9 @@
+@model RequestForm
+<h1>@Db.Setting("contacts_title")</h1>
+<div class="grid">
+    <div class="narrow"><p><strong>Адрес:</strong><br>@Db.Setting("address")</p><p><strong>Телефон:</strong><br><a href="tel:@Db.Setting("phone")">@Db.Setting("phone")</a></p><p><strong>Почта:</strong><br><a href="mailto:@Db.Setting("email")">@Db.Setting("email")</a></p><p><strong>Режим работы:</strong><br>@Db.Setting("hours")</p>
+        @foreach(var item in new Dictionary<string,string> { ["vk_url"]="ВКонтакте",["telegram_url"]="Telegram" }) { if(Db.Setting(item.Key)!="") { <a  href="@Db.Setting(item.Key)" target="_blank" rel="noopener">@item.Value</a> } }
+    </div>
+    <div class="wide"><partial name="_Contact" model="Model" /></div>
+</div>
+<iframe class="map box" src="@Db.Setting("map_url")" title="Карта проезда" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>

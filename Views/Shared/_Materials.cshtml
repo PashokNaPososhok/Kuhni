@@ -1,0 +1,14 @@
+@model Configuration
+@foreach(var category in Db.Pricing.Categories)
+{
+    string selected = Model.Materials.GetValueOrDefault(category.Key, "");
+    <label>@category.Value.Name
+        <select name="Config.Materials[@category.Key]" data-material="@category.Key">
+            <option value="" selected="@(selected=="")">Не выбрано</option>
+            @foreach(var option in category.Value.Options)
+            {
+                <option value="@option.Key" selected="@(selected==option.Key)">@option.Value.Label</option>
+            }
+        </select>
+    </label>
+}

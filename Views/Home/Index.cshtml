@@ -1,0 +1,35 @@
+@model HomePage
+<section class="home-banner">
+    <div class="grid">
+        <div class="half">
+            <p class="muted small">@Db.Setting("hero_eyebrow")</p>
+            <h1>@Html.Raw(Site.Lines(Db.Setting("hero_title")))</h1>
+            <p >@Html.Raw(Site.Lines(Db.Setting("hero_text")))</p>
+            <div class="inline"><a class="button" href="/catalog">Каталог кухонь</a><a class="button secondary" href="#calculator">Рассчитать стоимость</a></div>
+            <ul class="small muted">@for(int i=1;i<=3;i++) { <li>@Db.Setting("hero_note_"+i)</li> }</ul>
+        </div>
+        <div class="half"><img class="banner-photo" src="@Site.Image(Db.Setting("hero_image"))" alt="Кухня на заказ" width="800" height="550" fetchpriority="high"></div>
+    </div>
+</section>
+<div class="grid line-bottom">
+    @for(int i=1;i<=3;i++) { <div class="third"><h5>@Db.Setting("benefit_"+i+"_title")</h5><p class="small muted">@Db.Setting("benefit_"+i+"_text")</p></div> }
+</div>
+<section >
+    <div class="section-heading"><h2>@Db.Setting("catalog_title")</h2><a href="/catalog">Все кухни</a></div>
+    <p class="muted">@Db.Setting("catalog_text")</p>
+    <div class="grid">@foreach(var kitchen in Model.Kitchens) { <div class="third"><partial name="_Kitchen" model="kitchen" /></div> }</div>
+</section>
+<section >
+    <div class="section-heading"><h2>@Db.Setting("portfolio_title")</h2><a href="/portfolio">Все работы</a></div>
+    <div class="grid">@foreach(var project in Model.Projects) { <div class="half"><partial name="_Project" model="project" /></div> }</div>
+</section>
+<section class="separator line-bottom"><h2>@Html.Raw(Site.Lines(Db.Setting("about_title")))</h2><p>@Db.Setting("about_text")</p><a href="/about">Подробнее о компании</a></section>
+<section >
+    <div class="section-heading"><h2>@Db.Setting("reviews_title")</h2><a href="/reviews">Все отзывы</a></div>
+    <div class="grid">@foreach(var review in Model.Reviews) { <div class="half"><partial name="_Review" model="review" /></div> }</div>
+</section>
+<section id="calculator" ><h2>@Db.Setting("calculator_title")</h2><p class="muted">@Db.Setting("calculator_text")</p><partial name="_Calculator" model="Model.Calculator" /></section>
+<section class="grid">
+    <div class="narrow"><h2>@Db.Setting("contacts_title")</h2><p>@Db.Setting("address")</p><p><a href="tel:@Db.Setting("phone")">@Db.Setting("phone")</a><br><a href="mailto:@Db.Setting("email")">@Db.Setting("email")</a></p><p class="muted">@Db.Setting("hours")</p></div>
+    <div class="wide"><partial name="_Contact" model='new RequestForm { ReturnTo="/home" }' /></div>
+</section>

@@ -1,0 +1,16 @@
+@model CatalogPage
+<h1>@Db.Setting("catalog_title")</h1><p class="muted">@Db.Setting("catalog_text")</p>
+<form class="filter-panel box" method="get" action="/catalog">
+    <div class="grid">
+        <label class="third">Поиск<input name="Q" value="@Model.Q" placeholder="Название или стиль"></label>
+        <label class="third">Стиль<select name="Style"><option value="">Все стили</option>@foreach(var style in Model.Styles) { <option selected="@(style==Model.Style)">@style</option> }</select></label>
+        <label class="quarter">Длина до, м<input name="Length" type="number" min="0.6" max="8" step="0.01" value="@Site.Number(Model.Length)" placeholder="Любая"></label>
+        <label class="quarter">Цена от, ₽<input name="Min" type="number" min="0" max="10000000" value="@Site.Number(Model.Min)"></label>
+        <label class="quarter">Цена до, ₽<input name="Max" type="number" min="0" max="10000000" value="@Site.Number(Model.Max)"></label>
+        <label class="quarter">Сортировка<select name="Sort">@foreach(var item in new Dictionary<string,string> { ["popular"]="По порядку",["price_asc"]="Сначала дешевле",["price_desc"]="Сначала дороже",["name"]="По названию" }) { <option value="@item.Key" selected="@(item.Key==Model.Sort)">@item.Value</option> }</select></label>
+    </div>
+    <div class="inline"><button class="button">Показать</button><a href="/catalog">Сбросить</a></div>
+</form>
+<p class="small muted">Найдено моделей: @Model.Kitchens.Count. Цена указана для базовой комплектации.</p>
+<div class="grid">@foreach(var kitchen in Model.Kitchens) { <div class="third"><partial name="_Kitchen" model="kitchen" /></div> }</div>
+@if(Model.Kitchens.Count==0) { <p>По этим условиям кухонь нет. Попробуйте изменить фильтры.</p> }

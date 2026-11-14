@@ -1,0 +1,383 @@
+{
+  "settings": {
+    "brand": "Кухни на заказ",
+    "tagline": "Индивидуальные решения",
+    "hero_title": "Кухня, в которой\nхочется жить.",
+    "hero_text": "Проектируем и изготавливаем кухни\nпод ваш дом и ваш ритм жизни.",
+    "hero_image": "assets/img/kitchen-9.jpg",
+    "hero_eyebrow": "Создаём уют. Продумываем детали.",
+    "hero_note_1": "Гарантия до 5 лет",
+    "hero_note_2": "Бесплатный замер",
+    "hero_note_3": "Изготовление от 20 дней",
+    "benefit_1_title": "Индивидуальный проект",
+    "benefit_1_text": "По вашим размерам и привычкам.",
+    "benefit_2_title": "Качественные материалы",
+    "benefit_2_text": "Красиво сегодня. Надёжно надолго.",
+    "benefit_3_title": "Заботливая установка",
+    "benefit_3_text": "Аккуратный монтаж и внимание к деталям.",
+    "about_title": "Дом начинается\nс любимой кухни.",
+    "about_text": "Мы делаем кухни для повседневной жизни: утреннего кофе, семейных ужинов и долгих разговоров. Вместе с вами выбираем удобную планировку, приятные материалы и детали, которые делают пространство вашим.",
+    "about_history": "Наша история началась с простой идеи: хорошая кухня должна подходить человеку, а не наоборот. Мы объединяем проектирование, изготовление и установку в один понятный процесс. Вы общаетесь с одной командой от первого эскиза до последней ручки.",
+    "about_mission": "Создавать удобные кухни, в которых есть место и вещам, и жизни. Мы объясняем разницу между материалами, помогаем расставить приоритеты и заранее обсуждаем стоимость.",
+    "about_image": "assets/img/kitchen-4.jpg",
+    "catalog_title": "Найдите свою кухню",
+    "catalog_text": "Вдохновляйтесь готовыми решениями. Размеры и детали — под вас.",
+    "portfolio_title": "Наши работы",
+    "portfolio_text": "Разные пространства. Одна забота о деталях.",
+    "reviews_title": "Что говорят о нас",
+    "contacts_title": "Давайте познакомимся",
+    "calculator_title": "Рассчитайте вашу кухню",
+    "calculator_text": "Выберите материалы и размеры. Стоимость меняется сразу.",
+    "phone": "+7 (3412) 000-000",
+    "email": "mveu@mveu.ru",
+    "address": "Ижевск, ул. Пушкинская, 268Ж",
+    "hours": "Пн–Пт: 10:00–19:00 · Сб: 11:00–16:00",
+    "map_url": "https://maps.google.com/maps?q=Ижевск%20Пушкинская%20268&output=embed",
+    "vk_url": "",
+    "telegram_url": "",
+    "footer_text": "Кухни для вашей жизни.\nОт первого эскиза до тёплого вечера дома.",
+    "developer": "Пашок",
+    "legal": "Учебный проект. Компания, цены, проекты и начальные отзывы представлены для демонстрации. Фотографии — Unsplash.",
+    "privacy": "В учебной форме заявки запрашиваются имя, телефон, электронная почта и сообщение. Эти данные сохраняются в базе сайта и доступны администратору для ответа на обращение. Не отправляйте конфиденциальные сведения. Для удаления обращения свяжитесь по электронной почте, указанной в контактах."
+  },
+  "pricing": {
+    "extras": {
+      "lighting": {
+        "label": "Подсветка рабочей зоны",
+        "price": 2500,
+        "unit": "meter"
+      },
+      "sink": {
+        "label": "Мойка",
+        "price": 12500,
+        "unit": "fixed"
+      },
+      "mixer": {
+        "label": "Смеситель",
+        "price": 7500,
+        "unit": "fixed"
+      },
+      "hob": {
+        "label": "Варочная панель",
+        "price": 24000,
+        "unit": "fixed"
+      },
+      "oven": {
+        "label": "Духовой шкаф",
+        "price": 32000,
+        "unit": "fixed"
+      },
+      "hood": {
+        "label": "Вытяжка",
+        "price": 15000,
+        "unit": "fixed"
+      },
+      "dishwasher": {
+        "label": "Посудомоечная машина",
+        "price": 38000,
+        "unit": "fixed"
+      },
+      "island": {
+        "label": "Островной модуль 1,2 м",
+        "price": 49000,
+        "unit": "fixed"
+      }
+    },
+    "delivery": 3500,
+    "installation": 10,
+    "categories": {
+      "body": {
+        "name": "Корпус",
+        "unit": "cabinet",
+        "options": {
+          "ldsp": {
+            "label": "ЛДСП Egger",
+            "price": 11500
+          },
+          "plywood": {
+            "label": "Влагостойкая фанера",
+            "price": 17500
+          }
+        }
+      },
+      "countertop": {
+        "name": "Столешница",
+        "unit": "countertop",
+        "options": {
+          "laminate": {
+            "label": "Пластик HPL",
+            "price": 6500
+          },
+          "compact": {
+            "label": "Компакт-плита",
+            "price": 14500
+          },
+          "quartz": {
+            "label": "Кварцевый агломерат",
+            "price": 27000
+          }
+        }
+      }
+    }
+  },
+  "kitchens": [
+    {
+      "id": 1,
+      "name": "Тёплый дуб",
+      "style": "Современный",
+      "description": "Тактильные фасады под дерево и спокойные линии. Вместительные шкафы помогают держать рабочую поверхность свободной, а мягкая подсветка делает вечер уютнее.",
+      "image": "assets/img/kitchen-9.jpg",
+      "gallery": "assets/img/kitchen-9.jpg",
+      "surcharge": 0,
+      "sortOrder": 1,
+      "config": {
+        "shape": "l",
+        "height": 240,
+        "depth": 60,
+        "upper": true,
+        "delivery": true,
+        "installation": true,
+        "extras": {
+          "lighting": 1
+        },
+        "length": 3.2,
+        "width": 2.2,
+        "returnLength": 2,
+        "materials": {
+          "body": "ldsp",
+          "countertop": "laminate"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Тихое утро",
+      "style": "Неоклассика",
+      "description": "Светлая кухня с рамочными фасадами и тёплыми деревянными деталями. Продуманная рабочая зона для неспешных завтраков и семейных ужинов.",
+      "image": "assets/img/kitchen-1.jpg",
+      "gallery": "assets/img/kitchen-1.jpg\nassets/img/kitchen-2.jpg",
+      "surcharge": 0,
+      "sortOrder": 2,
+      "config": {
+        "shape": "l",
+        "height": 240,
+        "depth": 60,
+        "upper": true,
+        "delivery": true,
+        "installation": true,
+        "extras": {
+          "lighting": 1
+        },
+        "length": 3,
+        "width": 2.4,
+        "returnLength": 2,
+        "materials": {
+          "body": "ldsp",
+          "countertop": "laminate"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "Графит",
+      "style": "Лофт",
+      "description": "Глубокий серый цвет, лаконичные ручки и открытая рабочая зона. Практичные поверхности и удобная система хранения для насыщенного ритма жизни.",
+      "image": "assets/img/kitchen-10.jpg",
+      "gallery": "assets/img/kitchen-10.jpg",
+      "surcharge": 0,
+      "sortOrder": 3,
+      "config": {
+        "shape": "straight",
+        "height": 240,
+        "depth": 60,
+        "upper": true,
+        "delivery": true,
+        "installation": true,
+        "extras": {
+          "lighting": 1
+        },
+        "length": 3.6,
+        "width": 2,
+        "returnLength": 2,
+        "materials": {
+          "body": "ldsp",
+          "countertop": "laminate"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Светлый день",
+      "style": "Скандинавский",
+      "description": "Белые фасады, открытые полки и натуральные акценты. Простое решение для небольшого пространства, в котором хочется больше света.",
+      "image": "assets/img/kitchen-8.jpg",
+      "gallery": "assets/img/kitchen-8.jpg",
+      "surcharge": 0,
+      "sortOrder": 4,
+      "config": {
+        "shape": "straight",
+        "height": 240,
+        "depth": 60,
+        "upper": true,
+        "delivery": true,
+        "installation": true,
+        "extras": {
+          "lighting": 1
+        },
+        "length": 2.8,
+        "width": 2,
+        "returnLength": 2,
+        "materials": {
+          "body": "ldsp",
+          "countertop": "laminate"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "Белая классика",
+      "style": "Неоклассика",
+      "description": "Сдержанная классика с выразительными рамочными фасадами. Высокие шкафы и светлая столешница делают кухню удобной и визуально лёгкой.",
+      "image": "assets/img/kitchen-11.jpg",
+      "gallery": "assets/img/kitchen-11.jpg",
+      "surcharge": 0,
+      "sortOrder": 5,
+      "config": {
+        "shape": "u",
+        "height": 240,
+        "depth": 60,
+        "upper": true,
+        "delivery": true,
+        "installation": true,
+        "extras": {
+          "lighting": 1
+        },
+        "length": 3.2,
+        "width": 2.4,
+        "returnLength": 2.2,
+        "materials": {
+          "body": "ldsp",
+          "countertop": "quartz"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "Линия",
+      "style": "Современный",
+      "description": "Чистые линии и минимум лишних деталей. Компактная планировка, удобные ящики и простые в уходе материалы для каждого дня.",
+      "image": "assets/img/kitchen-12.jpg",
+      "gallery": "assets/img/kitchen-12.jpg",
+      "surcharge": 0,
+      "sortOrder": 6,
+      "config": {
+        "shape": "straight",
+        "height": 240,
+        "depth": 60,
+        "upper": true,
+        "delivery": true,
+        "installation": true,
+        "extras": {
+          "lighting": 1
+        },
+        "length": 3.2,
+        "width": 2,
+        "returnLength": 2,
+        "materials": {
+          "body": "ldsp",
+          "countertop": "compact"
+        }
+      }
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "kitchenId": 1,
+      "name": "Дуб и утренний свет",
+      "summary": "Тёплая кухня с удобной угловой планировкой.",
+      "description": "Тёплая кухня с удобной угловой планировкой. В этом демонстрационном проекте мы показываем, как можно организовать хранение и рабочую зону. Модель из каталога можно адаптировать под свои размеры в калькуляторе.",
+      "image": "assets/img/kitchen-9.jpg",
+      "gallery": "assets/img/kitchen-9.jpg",
+      "area": "14 м²",
+      "city": "Ижевск",
+      "duration": "28 дней",
+      "sortOrder": 1
+    },
+    {
+      "id": 2,
+      "kitchenId": 2,
+      "name": "Место для семейных завтраков",
+      "summary": "Светлые фасады и большая рабочая поверхность.",
+      "description": "Светлые фасады и большая рабочая поверхность. В этом демонстрационном проекте мы показываем, как можно организовать хранение и рабочую зону. Модель из каталога можно адаптировать под свои размеры в калькуляторе.",
+      "image": "assets/img/kitchen-2.jpg",
+      "gallery": "assets/img/kitchen-2.jpg",
+      "area": "18 м²",
+      "city": "Ижевск",
+      "duration": "30 дней",
+      "sortOrder": 2
+    },
+    {
+      "id": 3,
+      "kitchenId": 3,
+      "name": "Городской характер",
+      "summary": "Графитовые фасады и аккуратная встроенная техника.",
+      "description": "Графитовые фасады и аккуратная встроенная техника. В этом демонстрационном проекте мы показываем, как можно организовать хранение и рабочую зону. Модель из каталога можно адаптировать под свои размеры в калькуляторе.",
+      "image": "assets/img/kitchen-10.jpg",
+      "gallery": "assets/img/kitchen-10.jpg",
+      "area": "12 м²",
+      "city": "Ижевск",
+      "duration": "25 дней",
+      "sortOrder": 3
+    },
+    {
+      "id": 4,
+      "kitchenId": 4,
+      "name": "Больше света",
+      "summary": "Компактное решение без визуального шума.",
+      "description": "Компактное решение без визуального шума. В этом демонстрационном проекте мы показываем, как можно организовать хранение и рабочую зону. Модель из каталога можно адаптировать под свои размеры в калькуляторе.",
+      "image": "assets/img/kitchen-8.jpg",
+      "gallery": "assets/img/kitchen-8.jpg",
+      "area": "9 м²",
+      "city": "Ижевск",
+      "duration": "22 дня",
+      "sortOrder": 4
+    }
+  ],
+  "reviews": [
+    {
+      "name": "Елена",
+      "rating": 5,
+      "text": "Получилось именно так, как хотелось: светло, удобно и без лишних деталей. Особенно нравится подсветка.",
+      "approved": true,
+      "id": 1,
+      "createdAt": "2026-11-14T12:00:00",
+      "sortOrder": 0
+    },
+    {
+      "name": "Андрей",
+      "rating": 5,
+      "text": "Помогли разобраться с материалами и продумать хранение. Кухня выглядит спокойно и аккуратно.",
+      "approved": true,
+      "id": 2,
+      "createdAt": "2026-11-14T12:00:00",
+      "sortOrder": 0
+    },
+    {
+      "name": "Мария",
+      "rating": 4,
+      "text": "Удобно, что можно заранее прикинуть стоимость и отправить свои размеры. Всё понятно.",
+      "approved": true,
+      "id": 3,
+      "createdAt": "2026-11-14T12:00:00",
+      "sortOrder": 0
+    }
+  ],
+  "requests": [],
+  "admin": null,
+  "nextKitchenId": 7,
+  "nextProjectId": 5,
+  "nextReviewId": 4,
+  "nextRequestId": 1,
+  "version": 2
+}

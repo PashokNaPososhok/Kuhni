@@ -1,0 +1,3 @@
+@model int
+@{ Layout=null; string title=Model switch {404=>"Страница не найдена",400=>"Проверьте форму",429=>"Слишком много попыток",_=>"Не удалось открыть страницу"}; }
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>@title</title><link rel="stylesheet" href="/assets/css/app.css"></head><body><main class="container"><h1>@title</h1><p>@(Model==400?"Обновите страницу и отправьте форму ещё раз.":Model==429?"Попробуйте немного позже.":Model==500?"Проверьте файл AppData/site.json и права записи в папку AppData.":"Проверьте адрес страницы.")</p><a href="/">На главную</a></main></body></html>

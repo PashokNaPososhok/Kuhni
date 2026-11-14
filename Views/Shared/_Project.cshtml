@@ -1,0 +1,10 @@
+@model Project
+<article class="card stretch">
+    <a href="/project?id=@Model.Id"><img class="card-img-top project-photo" src="@Site.Image(Model.Image)" alt="@Model.Name" loading="lazy" width="800" height="500"></a>
+    <div class="card-body">
+        <h3 class="heading-small"><a href="/project?id=@Model.Id">@Model.Name</a></h3>
+        <p class="small muted">@Model.Summary</p>
+        <p class="small">@Model.Area · @Model.City</p>
+        <a href="/project?id=@Model.Id">Посмотреть проект</a>
+    </div>
+</article>

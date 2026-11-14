@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] — @Db.Setting("brand")</title>
+    @if(Context.Request.Path.StartsWithSegments("/admin")) { <meta name="robots" content="noindex,nofollow"> }
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/css/app.css">
+    <script src="/assets/js/app.js" defer></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-row">
+            <a class="brand" href="/">@Db.Setting("brand")<small>@Db.Setting("tagline")</small></a>
+            <nav class="main-menu" aria-label="Основное меню">
+                <a href="/about">О компании</a>
+                <a href="/catalog">Каталог</a>
+                <a href="/portfolio">Портфолио</a>
+                <a href="/reviews">Отзывы</a>
+                <a href="/contact">Контакты</a>
+                <a class="button" href="/calculator">Калькулятор</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container page">
+        @if(TempData["Success"] is string message) { <div class="notice success" role="status">@message</div> }
+        @if(TempData["Error"] is string error) { <div class="notice error" role="alert">@error</div> }
+        @if(!ViewData.ModelState.IsValid) { <div class="notice error" role="alert">@Html.ValidationSummary(false)</div> }
+        @RenderBody()
+    </main>
+    <footer class="site-footer">
+        <div class="container">
+            <div class="grid">
+                <div class="half"><strong>@Db.Setting("brand")</strong><p class="small muted">@Html.Raw(Site.Lines(Db.Setting("footer_text")))</p></div>
+                <div class="quarter footer-links"><a href="/catalog">Каталог</a><a href="/portfolio">Наши работы</a></div>
+                <div class="quarter footer-links"><a href="tel:@Db.Setting("phone")">@Db.Setting("phone")</a><a href="mailto:@Db.Setting("email")">@Db.Setting("email")</a><span>@Db.Setting("address")</span></div>
+            </div>
+            <div class="separator small muted">
+                <p>© @DateTime.Now.Year @Db.Setting("brand") · <span>Разработчик: @Db.Setting("developer")</span></p>
+                <p>@Db.Setting("legal")</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

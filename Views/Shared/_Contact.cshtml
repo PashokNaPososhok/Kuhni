@@ -1,0 +1,15 @@
+@model RequestForm
+<form class="box" method="post" action="/actions/request">
+    @Html.AntiForgeryToken()
+    <h3 class="heading-small">Оставить заявку</h3>
+    <input type="hidden" name="ReturnTo" value="@Model.ReturnTo">
+    <div class="honeypot" aria-hidden="true"><input name="Website" tabindex="-1" autocomplete="off" aria-label="Сайт"></div>
+    <div class="grid">
+        <label class="half">Ваше имя<input name="Name" minlength="2" maxlength="80" value="@Model.Name" autocomplete="name" required></label>
+        <label class="half">Телефон<input name="Phone" type="tel" maxlength="40" value="@Model.Phone" autocomplete="tel" required></label>
+        <label class="full">Электронная почта<input name="Email" type="email" maxlength="150" value="@Model.Email" autocomplete="email" required></label>
+        <label class="full">Пожелания<textarea name="Message" maxlength="3000" rows="3">@Model.Message</textarea></label>
+    </div>
+    <label class="inline small"><input type="checkbox" name="Consent" value="true" required><span>Согласен на обработку данных для ответа на заявку.</span></label>
+    <button class="button">Отправить заявку</button>
+</form>

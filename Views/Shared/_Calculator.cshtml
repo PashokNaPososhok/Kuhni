@@ -1,0 +1,59 @@
+@model RequestForm
+@{ var config=Model.Config; var pricing=Db.Pricing; var quote=Model.Quote??Calculator.Calculate(config,pricing); }
+<div data-calculator>
+    @if(Model.Model!=null)
+    {
+        <div class="selected-model box"><img src="@Site.Image(Model.Model.Image)" alt="@Model.Model.Name" width="100" height="70"><div><strong>@Model.Model.Name</strong><p class="small">Комплектация выбрана. Укажите свои размеры.</p></div><a class="push small" href="/calculator">Сбросить модель</a></div>
+    }
+    <form method="post" action="/actions/request">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ReturnTo" value="@Model.ReturnTo"><input type="hidden" name="HasCalculation" value="true"><input type="hidden" name="KitchenId" value="@Model.KitchenId">
+        <div class="honeypot" aria-hidden="true"><input name="Website" tabindex="-1" autocomplete="off" aria-label="Сайт"></div>
+        <div class="grid">
+            <div class="wide">
+                <fieldset class="box"><legend class="heading-small">Размеры кухни</legend>
+                    <div class="grid">
+                        <label class="half">Форма кухни<select name="Config.Shape" data-field="shape">@foreach(var item in new Dictionary<string,string> { ["straight"]="Прямая",["l"]="Угловая",["u"]="П-образная" }) { <option value="@item.Key" selected="@(config.Shape==item.Key)">@item.Value</option> }</select></label>
+                        <label class="half">Длина, м<input type="number" name="Config.Length" min="0.6" max="8" step="0.01" value="@Site.Number(config.Length)" data-field="length" required></label>
+                        <label class="half" data-dimension="width">Ширина, м<input type="number" name="Config.Width" min="0.6" max="8" step="0.01" value="@Site.Number(config.Width)" data-field="width" required></label>
+                        <label class="half" data-dimension="returnLength">Вторая длина, м<input type="number" name="Config.ReturnLength" min="0.6" max="8" step="0.01" value="@Site.Number(config.ReturnLength)" data-field="returnLength" required></label>
+                        <label class="half">Высота кухни, см<input type="number" name="Config.Height" min="200" max="300" step="1" value="@config.Height" data-field="height" required></label>
+                        <label class="half">Глубина столешницы, см<input type="number" name="Config.Depth" min="45" max="90" step="1" value="@config.Depth" data-field="depth" required></label>
+                    </div>
+                    <label class="inline"><input type="checkbox" name="Config.Upper" value="true" data-field="upper" checked="@config.Upper">Верхний ряд шкафов</label><input type="hidden" name="Config.Upper" value="false">
+                    <p class="small muted">Стороны указываются по стенам. Пересечение углов по 0,6 м учитывается один раз.</p>
+                </fieldset>
+                <fieldset class="box"><legend class="heading-small">Материалы</legend>
+                    <div class="form-grid"><partial name="_Materials" model="config" /></div>
+                </fieldset>
+                <fieldset class="box"><legend class="heading-small">Дополнительные опции</legend>
+                    <div class="grid">
+                        @foreach(var item in pricing.Extras)
+                        {
+                            <div class="half">
+                                <label class="inline"><input type="checkbox" name="Config.Extras[@item.Key]" value="1" data-extra="@item.Key" checked="@(config.Extras.GetValueOrDefault(item.Key)>0)"><span>@item.Value.Label</span></label><input type="hidden" name="Config.Extras[@item.Key]" value="0">
+                                <small class="muted">@Site.Money(item.Value.Price)@(item.Value.Unit=="meter"?" / пог. м":"")</small>
+                            </div>
+                        }
+                    </div>
+                    <div class="separator inline">
+                        <label class="inline"><input type="checkbox" name="Config.Delivery" value="true" data-field="delivery" checked="@config.Delivery">Доставка @Site.Money(pricing.Delivery)</label><input type="hidden" name="Config.Delivery" value="false">
+                        <label class="inline"><input type="checkbox" name="Config.Installation" value="true" data-field="installation" checked="@config.Installation">Монтаж @pricing.Installation%</label><input type="hidden" name="Config.Installation" value="false">
+                    </div>
+                </fieldset>
+                <fieldset class="box"><legend class="heading-small">Оставить заявку</legend>
+                    <div class="grid">
+                        <label class="half">Ваше имя<input name="Name" minlength="2" maxlength="80" value="@Model.Name" autocomplete="name" required></label>
+                        <label class="half">Телефон<input type="tel" name="Phone" maxlength="40" value="@Model.Phone" autocomplete="tel" required></label>
+                        <label class="full">Электронная почта<input type="email" name="Email" maxlength="150" value="@Model.Email" autocomplete="email" required></label>
+                        <label class="full">Пожелания<textarea name="Message" rows="3" maxlength="3000">@Model.Message</textarea></label>
+                    </div>
+                    <label class="inline small"><input type="checkbox" name="Consent" value="true" required><span>Согласен на обработку данных для ответа на заявку.</span></label>
+                    <button class="button">Отправить расчёт</button>
+                </fieldset>
+            </div>
+            <div class="narrow"><aside class="quote box"><h3 class="heading-small">Предварительный расчёт</h3><p class="small muted" data-quote-dimensions>@Site.Shape(config.Shape) · @quote.Length пог. м</p><p class="price" data-quote-total aria-live="polite">@Site.Money(quote.Total)</p><div class="quote-lines small" data-quote-lines>@foreach(var line in quote.Lines) { <div><span>@line.Label</span><strong>@Site.Money(line.Amount)</strong></div> }</div><p class="small muted separator">Расчёт по учебным расценкам. Точную стоимость уточним после замера.</p></aside></div>
+        </div>
+    </form>
+    <script type="application/json" data-calculator-data>@Html.Raw(JsonSerializer.Serialize(new {pricing,configuration=config,surcharge=Model.Model?.Surcharge??0},Site.Json))</script>
+</div>

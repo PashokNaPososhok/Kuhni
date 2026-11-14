@@ -1,0 +1,15 @@
+@model Kitchen
+@{ var config=Calculator.ForKitchen(Model,Db.Pricing); }
+<article class="card stretch">
+    <a href="/kitchen?id=@Model.Id"><img class="card-img-top kitchen-photo" src="@Site.Image(Model.Image)" alt="Кухня @Model.Name" loading="lazy" width="600" height="400"></a>
+    <div class="card-body inline column">
+        <h3 class="heading-small"><a href="/kitchen?id=@Model.Id">@Model.Name</a></h3>
+        <p class="small muted">@Model.Style</p>
+        <p class="small">@Site.MaterialText(config,Db.Pricing)</p>
+        <div class="push-down">
+            <p class="bold">от @Site.Money(Calculator.Price(Model,Db.Pricing))</p>
+            <a class="button secondary" href="/kitchen?id=@Model.Id">Подробнее</a>
+            <a class="button" href="/calculator?model=@Model.Id">Рассчитать</a>
+        </div>
+    </div>
+</article>

@@ -1,0 +1,286 @@
+@model AdminPage
+@inject IWebHostEnvironment Environment
+@{ var pricing=Db.Pricing; var config=Model.Config; }
+@if(Model.LoginPage)
+{
+    <div class="login-box box">
+        <h1 class="heading-small">Вход администратора</h1>
+        <form method="post" action="/admin/login">
+            @Html.AntiForgeryToken()
+            <label class="block">Логин<input name="Login" value="@Model.Login" maxlength="80" autocomplete="username" required></label>
+            <label class="block">Пароль<input type="password" name="Password" maxlength="200" autocomplete="current-password" required></label>
+            <button class="button">Войти</button>
+        </form>
+    </div>
+}
+else
+{
+    <div class="section-heading"><h1>Панель администратора</h1><form method="post" action="/admin/logout">@Html.AntiForgeryToken()<button class="button secondary">Выйти</button></form></div>
+    <nav class="admin-tabs" aria-label="Разделы админки">
+        @foreach(var item in Site.Sections)
+        {
+            <a class="tab-link @(Model.Section==item.Key?"active":"")" href="/admin?section=@item.Key">@item.Value
+                @if(item.Key=="requests" && Model.Pending>0) { <span>(@Model.Pending)</span> }
+                @if(item.Key=="reviews" && Model.Moderation>0) { <span>(@Model.Moderation)</span> }
+            </a>
+        }
+    </nav>
+    <h2 class="heading-small">@Site.Sections[Model.Section]</h2>
+    @if(Model.Section=="dashboard")
+    {
+        <div class="stats-grid">@foreach(var item in Model.Counts) { <div class="box"><span>@item.Key</span><strong>@item.Value</strong></div> }</div>
+        <section class="box">
+            <div class="section-heading"><h2>Последние заявки</h2><a href="/admin?section=requests">Все заявки</a></div>
+            @if(Model.Requests.Rows.Count==0) { <p>Заявок пока нет. Они появятся после отправки формы на сайте.</p> }
+            else
+            {
+                <div class="table-scroll"><table class="table"><thead><tr><th>№</th><th>Клиент</th><th>Телефон</th><th>Стоимость</th><th>Статус</th><th>Дата</th></tr></thead><tbody>
+                    @foreach(var row in Model.Requests.Rows) { <tr><td><a href="/admin?section=requests&view=@row.Id">#@row.Id</a></td><td>@row.Name</td><td>@row.Phone</td><td>@(row.Total.HasValue?Site.Money(row.Total):"—")</td><td><span class="badge @row.Status">@Site.Status(row.Status)</span></td><td>@row.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td></tr> }
+                </tbody></table></div>
+            }
+        </section>
+        <div class="admin-quick"><a class="box" href="/admin?section=catalog&edit=new"><h3>Добавить кухню</h3><p >Фотографии, материалы и базовая комплектация</p></a><a class="box" href="/admin?section=pricing"><h3>Изменить расценки</h3><p >Единые цены для каталога и калькулятора</p></a></div>
+    }
+    @if(Model.Section=="requests")
+    {
+        if(Model.Inquiry!=null)
+        {
+            var row=Model.Inquiry; var quote=Model.Snapshot;
+            <a class="back-link" href="/admin?section=requests">← Все заявки</a>
+            <div class="admin-detail-grid">
+                <section class="box">
+                    <div class="section-heading"><h2>Заявка #@row.Id</h2><span class="badge @row.Status">@Site.Status(row.Status)</span></div>
+                    <dl class="specs"><div><dt>Имя</dt><dd>@row.Name</dd></div><div><dt>Телефон</dt><dd><a href="tel:@row.Phone">@row.Phone</a></dd></div><div><dt>Почта</dt><dd><a href="mailto:@row.Email">@row.Email</a></dd></div><div><dt>Создана</dt><dd>@row.CreatedAt.ToString("dd.MM.yyyy HH:mm")</dd></div><div><dt>Источник</dt><dd>@(row.Source=="calculator"?"Калькулятор":"Форма связи")</dd></div></dl>
+                    <h3>Пожелания клиента</h3><p>@Html.Raw(Site.Lines(row.Message==""?"Не указаны":row.Message))</p>
+                    @if(quote!=null)
+                    {
+                        var c=quote.Configuration;
+                        <h3>@quote.Model</h3><p>@quote.ShapeLabel · Длина: @c.Length м @if(c.Shape!="straight") { <span> · Ширина: @c.Width м</span> } @if(c.Shape=="u") { <span> · Вторая длина: @c.ReturnLength м</span> }<br>Высота: @c.Height см · Глубина: @c.Depth см<br>Верхние шкафы: @(c.Upper?"да":"нет") · Расчётная длина: @quote.Length пог. м</p>
+                        <div class="quote-lines">@foreach(var line in quote.Lines) { <div><span>@line.Label</span><strong>@Site.Money(line.Amount)</strong></div> }</div>
+                        <div class="total-line"><span>Сумма на момент заявки</span><strong>@Site.Money(row.Total)</strong></div><p class="fine">Изменение расценок не меняет сохранённую заявку.</p>
+                    }
+                </section>
+                <section class="box"><h2>Обработка заявки</h2>
+                    <form method="post" action="/admin/save-request">
+                        @Html.AntiForgeryToken()<input type="hidden" name="Id" value="@row.Id">
+                        <label class="block">Статус<select name="Status">@foreach(string status in new[] {"new","work","done"}) { <option value="@status" selected="@(status==row.Status)">@Site.Status(status)</option> }</select></label>
+                        <label class="block">Заметка администратора<textarea name="Note" rows="8" maxlength="5000">@row.Note</textarea></label>
+                        <button class="button">Сохранить</button>
+                    </form>
+                    <form  method="post" action="/admin/delete" data-confirm="Удалить заявку и контактные данные клиента?">@Html.AntiForgeryToken()<input type="hidden" name="Section" value="requests"><input type="hidden" name="Id" value="@row.Id"><button class="danger-link">Удалить заявку</button></form>
+                </section>
+            </div>
+        }
+        else
+        {
+            var list=Model.Requests;
+            <form class="filters admin-filters" method="get" action="/admin">
+                <input type="hidden" name="Section" value="requests">
+                <label>Поиск<input name="Q" value="@list.Q" maxlength="100" placeholder="Имя, телефон или почта"></label>
+                <label>Статус<select name="Status"><option value="">Все статусы</option>@foreach(string status in new[] {"new","work","done"}) { <option value="@status" selected="@(status==list.Status)">@Site.Status(status)</option> }</select></label>
+                <label>Сортировка<select name="Sort">@foreach(var item in new Dictionary<string,string> { ["newest"]="Сначала новые",["oldest"]="Сначала старые",["sum_desc"]="Сумма по убыванию",["sum_asc"]="Сумма по возрастанию",["name"]="По имени" }) { <option value="@item.Key" selected="@(list.Sort==item.Key)">@item.Value</option> }</select></label>
+                <div class="filter-actions"><button class="button">Применить</button><a href="/admin?section=requests">Сбросить</a></div>
+            </form>
+            <p class="muted">Найдено заявок: @list.Count</p>
+            <div class="box table-scroll"><table class="table"><thead><tr><th>№ / дата</th><th>Клиент</th><th>Контакты</th><th>Стоимость</th><th>Статус</th><th></th></tr></thead><tbody>
+                @foreach(var row in list.Rows) { <tr><td>#@row.Id<small>@row.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small></td><td>@row.Name<small>@(row.Source=="calculator"?"Калькулятор":"Обратная связь")</small></td><td>@row.Phone<small>@row.Email</small></td><td>@(row.Total.HasValue?Site.Money(row.Total):"—")</td><td><span class="badge @row.Status">@Site.Status(row.Status)</span></td><td><a href="/admin?section=requests&view=@row.Id">Открыть →</a></td></tr> }
+                @if(list.Rows.Count==0) { <tr><td colspan="6">Заявок по этим условиям нет.</td></tr> }
+            </tbody></table></div>
+            @if(list.Pages>1) { <nav class="pagination" aria-label="Страницы заявок">@for(int i=1;i<=list.Pages;i++) { <a class="@(i==list.P?"active":"")" href="@Url.Action("Index","Admin",new {section="requests",q=list.Q,status=list.Status,sort=list.Sort,p=i})">@i</a> }</nav> }
+        }
+    }
+    @if(Model.Section=="catalog")
+    {
+        if(Model.Editing)
+        {
+            var kitchen=Model.Kitchen;
+            <a class="back-link" href="/admin?section=catalog">← Все модели</a>
+            <form class="editor box" method="post" action="/admin/save-catalog" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()<input type="hidden" name="Kitchen.Id" value="@kitchen.Id">
+                <h2>@(kitchen.Id==0?"Новая кухня":"Редактирование модели")</h2>
+                <div class="form-grid"><label>Название<input name="Kitchen.Name" value="@kitchen.Name" minlength="2" maxlength="150" required></label><label>Стиль<input name="Kitchen.Style" value="@kitchen.Style" maxlength="80" required></label><label class="span-2">Описание — на странице модели<textarea name="Kitchen.Description" rows="5" maxlength="12000" required>@kitchen.Description</textarea></label></div>
+                <label>Главная фотография: путь или HTTPS-ссылка<input name="Kitchen.Image" value="@kitchen.Image" data-main-image maxlength="500"></label>
+                <label>Или загрузить новую фотографию<input type="file" name="main_photo" accept="image/jpeg,image/png,image/webp"></label>
+                <label>Галерея: один путь или HTTPS-адрес на строку<textarea name="Kitchen.Gallery" rows="4" maxlength="10000">@kitchen.Gallery</textarea></label>
+                <label>Добавить фотографии в галерею<input type="file" name="gallery_photos" accept="image/jpeg,image/png,image/webp" multiple></label>
+                <p class="fine">JPG, PNG, WebP. До 5 МБ на фото.</p>
+                <details><summary>Фотографии из комплекта</summary><div class="asset-picker">@foreach(string photo in Directory.GetFiles(System.IO.Path.Combine(Environment.WebRootPath,"assets/img"),"*.jpg")) { string path="assets/img/"+System.IO.Path.GetFileName(photo); <button type="button" data-use-image="@path"><img src="@Site.Image(path)" alt="@System.IO.Path.GetFileName(photo)" width="150" height="100"></button> }</div></details>
+                <h3>Базовая комплектация</h3><p class="muted">Эти параметры заранее выбираются при переходе из каталога в калькулятор.</p>
+                <div class="form-grid">
+                    <label>Форма кухни<select name="Config.Shape">@foreach(var item in new Dictionary<string,string> { ["straight"]="Прямая",["l"]="Угловая",["u"]="П-образная" }) { <option value="@item.Key" selected="@(item.Key==config.Shape)">@item.Value</option> }</select></label>
+                    <label>Длина, м<input type="number" name="Config.Length" min="0.6" max="8" step="0.01" value="@Site.Number(config.Length)" required></label>
+                    <label>Ширина, м<input type="number" name="Config.Width" min="0.6" max="8" step="0.01" value="@Site.Number(config.Width)" required></label>
+                    <label>Вторая длина, м<input type="number" name="Config.ReturnLength" min="0.6" max="8" step="0.01" value="@Site.Number(config.ReturnLength)" required></label>
+                    <label>Высота кухни, см<input type="number" name="Config.Height" min="200" max="300" step="1" value="@config.Height" required></label>
+                    <label>Глубина столешницы, см<input type="number" name="Config.Depth" min="45" max="90" step="1" value="@config.Depth" required></label>
+                    <partial name="_Materials" model="config" />
+                </div>
+                <div class="extras-grid">
+                    @foreach(var item in pricing.Extras)
+                    {
+                        <label class="check-option"><input type="checkbox" name="Config.Extras[@item.Key]" value="1" checked="@(config.Extras.GetValueOrDefault(item.Key)>0)"><span>@item.Value.Label</span><input type="hidden" name="Config.Extras[@item.Key]" value="0"></label>
+                    }
+                </div>
+                <div class="form-grid"><label>Наценка модели, ₽<input type="number" name="Kitchen.Surcharge" value="@Site.Number(kitchen.Surcharge)" min="0" max="1000000" step="0.01" required></label><label>Порядок показа<input type="number" name="Kitchen.SortOrder" value="@kitchen.SortOrder" min="-100000" max="100000"></label></div>
+                <div class="checks">
+                    <label><input type="checkbox" name="Config.Upper" value="true" checked="@config.Upper"> Верхний ряд шкафов</label><input type="hidden" name="Config.Upper" value="false">
+                    <label><input type="checkbox" name="Config.Delivery" value="true" checked="@config.Delivery"> Доставка</label><input type="hidden" name="Config.Delivery" value="false">
+                    <label><input type="checkbox" name="Config.Installation" value="true" checked="@config.Installation"> Монтаж</label><input type="hidden" name="Config.Installation" value="false">
+                    
+                    
+                </div>
+                <button class="button">Сохранить модель</button>
+            </form>
+        }
+        else
+        {
+            <div class="section-heading"><p class="muted">Модели и базовая комплектация</p><a class="button" href="/admin?section=catalog&edit=new">Добавить кухню</a></div>
+            <div class="box table-scroll"><table class="table"><thead><tr><th>Модель</th><th>Стиль</th><th>Цена от</th><th>Порядок</th><th>Действия</th></tr></thead><tbody>
+                @foreach(var kitchen in Model.Kitchens) { <tr><td><div class="table-model"><img src="@Site.Image(kitchen.Image)" alt="" width="90" height="65"><strong>@kitchen.Name</strong></div></td><td>@kitchen.Style</td><td>@Site.Money(Calculator.Price(kitchen,pricing))</td><td>@kitchen.SortOrder</td><td><div class="row-actions"><a href="/admin?section=catalog&edit=@kitchen.Id">Изменить</a><form method="post" action="/admin/delete" data-confirm="Удалить модель? Старые заявки сохранят свою смету.">@Html.AntiForgeryToken()<input type="hidden" name="Section" value="catalog"><input type="hidden" name="Id" value="@kitchen.Id"><button class="danger-link">Удалить</button></form></div></td></tr> }
+            </tbody></table></div>
+        }
+    }
+    @if(Model.Section=="portfolio")
+    {
+        if(Model.Editing)
+        {
+            var project=Model.Project;
+            <a class="back-link" href="/admin?section=portfolio">← Все проекты</a>
+            <form class="editor box" method="post" action="/admin/save-portfolio" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()<input type="hidden" name="Project.Id" value="@project.Id">
+                <h2>@(project.Id==0?"Новый проект":"Редактирование проекта")</h2>
+                <label>Название<input name="Project.Name" value="@project.Name" minlength="2" maxlength="150" required></label>
+                <label>Краткое описание<input name="Project.Summary" value="@project.Summary" maxlength="300"></label>
+                <label>Полное описание<textarea name="Project.Description" rows="5" maxlength="12000" required>@project.Description</textarea></label>
+                <div class="form-grid">
+                    <label>Связанная модель<select name="Project.KitchenId"><option value="0">Без модели</option>@foreach(var kitchen in Model.Kitchens) { <option value="@kitchen.Id" selected="@(project.KitchenId==kitchen.Id)">@kitchen.Name</option> }</select></label>
+                    <label>Площадь<input name="Project.Area" value="@project.Area" maxlength="80"></label><label>Город<input name="Project.City" value="@project.City" maxlength="100"></label><label>Срок изготовления<input name="Project.Duration" value="@project.Duration" maxlength="80"></label>
+                </div>
+                <label>Главная фотография: путь или HTTPS-ссылка<input name="Project.Image" value="@project.Image" data-main-image maxlength="500"></label><label>Или загрузить фото<input name="main_photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
+                <label>Галерея: одна ссылка на строку<textarea name="Project.Gallery" rows="4" maxlength="10000">@project.Gallery</textarea></label><label>Добавить фотографии<input name="gallery_photos" type="file" accept="image/jpeg,image/png,image/webp" multiple></label>
+                <label>Порядок показа<input name="Project.SortOrder" type="number" value="@project.SortOrder" min="-100000" max="100000"></label>
+                <div class="checks"></div>
+                <button class="button">Сохранить проект</button>
+            </form>
+        }
+        else
+        {
+            <div class="section-heading"><p class="muted">Готовые проекты и связь с каталогом</p><a class="button" href="/admin?section=portfolio&edit=new">Добавить проект</a></div>
+            <div class="box table-scroll"><table class="table"><thead><tr><th>Проект</th><th>Модель</th><th>Порядок</th><th>Действия</th></tr></thead><tbody>
+                @foreach(var project in Model.Projects) { <tr><td><div class="table-model"><img src="@Site.Image(project.Image)" alt="" width="90" height="65"><strong>@project.Name</strong></div></td><td>@(project.KitchenName??"Без модели")</td><td>@project.SortOrder</td><td><div class="row-actions"><a href="/admin?section=portfolio&edit=@project.Id">Изменить</a><form method="post" action="/admin/delete" data-confirm="Удалить проект?">@Html.AntiForgeryToken()<input type="hidden" name="Section" value="portfolio"><input type="hidden" name="Id" value="@project.Id"><button class="danger-link">Удалить</button></form></div></td></tr> }
+            </tbody></table></div>
+        }
+    }
+    @if(Model.Section=="reviews")
+    {
+        if(Model.Editing)
+        {
+            var review=Model.Review;
+            <a class="back-link" href="/admin?section=reviews">← Все отзывы</a>
+            <form class="editor box" method="post" action="/admin/save-review">
+                @Html.AntiForgeryToken()<input type="hidden" name="Id" value="@review.Id">
+                <label>Имя<input name="Name" value="@review.Name" minlength="2" maxlength="80" required></label>
+                <label>Оценка<select name="Rating">@for(int i=5;i>=1;i--) { <option value="@i" selected="@(review.Rating==i)">@i из 5</option> }</select></label>
+                <label>Отзыв<textarea name="Text" rows="6" minlength="10" maxlength="2000" required>@review.Text</textarea></label>
+                <div class="checks"><label><input type="checkbox" name="Approved" value="true" checked="@review.Approved"> Опубликован</label><input type="hidden" name="Approved" value="false"></div>
+                <label>Порядок показа<input type="number" name="SortOrder" value="@review.SortOrder" min="-100000" max="100000"></label>
+                <button class="button">Сохранить отзыв</button>
+            </form>
+        }
+        else
+        {
+            <div class="section-heading"><div class="inline-links"><a href="/admin?section=reviews">Все отзывы</a><a href="/admin?section=reviews&filter=pending">На проверке (@Model.Moderation)</a></div><a class="button" href="/admin?section=reviews&edit=new">Добавить отзыв</a></div>
+            @foreach(var review in Model.Reviews)
+            {
+                <article class="box"><div class="section-heading"><h3>@review.Name · @review.Rating из 5</h3><span class="badge @(review.Approved?"done":"new")">@(review.Approved?"Опубликован":"На проверке")</span></div><p>@Html.Raw(Site.Lines(review.Text))</p><div class="row-actions">
+                    @if(!review.Approved) { <form method="post" action="/admin/approve">@Html.AntiForgeryToken()<input type="hidden" name="Id" value="@review.Id"><button class="button">Опубликовать</button></form> }
+                    <a href="/admin?section=reviews&edit=@review.Id">Изменить</a><form method="post" action="/admin/delete" data-confirm="Удалить отзыв?">@Html.AntiForgeryToken()<input type="hidden" name="Section" value="reviews"><input type="hidden" name="Id" value="@review.Id"><button class="danger-link">Удалить</button></form>
+                </div></article>
+            }
+            @if(Model.Reviews.Count==0) { <p>Отзывов по этим условиям нет.</p> }
+        }
+    }
+    @if(Model.Section=="content")
+    {
+        var group=Db.Groups[Model.Group];
+        <div class="content-tabs">@foreach(var item in Db.Groups) { <a class="@(item.Key==Model.Group?"active":"")" href="/admin?section=content&group=@item.Key">@item.Value.Label</a> }</div>
+        <form class="editor box" method="post" action="/admin/save-content" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()<input type="hidden" name="Group" value="@Model.Group"><h2>@group.Label</h2><p class="muted">Изменения используются на всех связанных страницах.</p>
+            @foreach(var item in group.Fields)
+            {
+                <label>@item.Value
+                    @if(new[] {"text","history","mission","title","privacy","legal"}.Any(x=>item.Key.Contains(x))) { <textarea name="Values[@item.Key]" rows="4" maxlength="12000">@Db.Setting(item.Key)</textarea> }
+                    else { <input name="Values[@item.Key]" value="@Db.Setting(item.Key)" maxlength="12000"> }
+                </label>
+                @if(item.Key.EndsWith("_image")) { <img class="editor-preview" src="@Site.Image(Db.Setting(item.Key))" alt="Текущая фотография"><label>Загрузить фотографию<input type="file" name="@(item.Key+"_upload")" accept="image/jpeg,image/png,image/webp"></label> }
+            }
+            <button class="button">Сохранить изменения</button>
+        </form>
+    }
+    @if(Model.Section=="pricing")
+    {
+        <p class="muted">Категории используются в калькуляторе и комплектации кухонь. Новая категория остаётся пустой, пока вы сами не выберете вариант в кухне.</p>
+        <form class="box compact-form" method="post" action="/admin/add-category">
+            @Html.AntiForgeryToken()
+            <h3>Новая категория</h3>
+            <div class="form-grid">
+                <label>Название<input name="Name" maxlength="100" placeholder="Например, ручки" required></label>
+                <label>Как считать<select name="Unit"><option value="meter">За погонный метр</option><option value="fixed">За комплект</option></select></label>
+            </div>
+            <button>Добавить категорию</button>
+        </form>
+        <form id="pricing-values" method="post" action="/admin/save-pricing">@Html.AntiForgeryToken()</form>
+        @foreach(var category in pricing.Categories)
+        {
+            <section class="box pricing-category">
+                <div class="section-heading">
+                    <h3>@category.Value.Name <small class="muted">· @Site.Unit(category.Value.Unit)</small></h3>
+                    <form method="post" action="/admin/delete-category" data-confirm="Удалить категорию и её варианты? Старые заявки сохранят сумму.">@Html.AntiForgeryToken()<input type="hidden" name="Id" value="@category.Key"><button class="danger-link">Удалить категорию</button></form>
+                </div>
+                <label>Название категории<input form="pricing-values" name="Pricing.Categories[@category.Key].Name" value="@category.Value.Name" maxlength="100" required></label>
+                @foreach(var option in category.Value.Options)
+                {
+                    <div class="price-option-row">
+                        <label>Вариант<input form="pricing-values" name="Pricing.Categories[@category.Key].Options[@option.Key].Label" value="@option.Value.Label" maxlength="100" required></label>
+                        <label>Цена, ₽<input form="pricing-values" type="number" name="Pricing.Categories[@category.Key].Options[@option.Key].Price" value="@Site.Number(option.Value.Price)" min="0" max="1000000" step="0.01" required></label>
+                        <form method="post" action="/admin/delete-option" data-confirm="Удалить вариант? В кухнях с этим вариантом поле станет пустым.">@Html.AntiForgeryToken()<input type="hidden" name="Category" value="@category.Key"><input type="hidden" name="Id" value="@option.Key"><button class="danger-link">Удалить</button></form>
+                    </div>
+                }
+                @if(category.Value.Options.Count==0) { <p class="muted">Вариантов пока нет. Добавьте первый ниже.</p> }
+                <form class="add-option-form" method="post" action="/admin/add-option">
+                    @Html.AntiForgeryToken()<input type="hidden" name="Category" value="@category.Key">
+                    <label>Новый вариант<input name="Name" maxlength="100" placeholder="Название" required></label>
+                    <label>Цена, ₽<input type="number" name="Price" min="0" max="1000000" step="0.01" value="0" required></label>
+                    <button class="secondary">Добавить вариант</button>
+                </form>
+            </section>
+        }
+        <section class="box">
+            <h3>Дополнительные опции</h3>
+            @foreach(var extra in pricing.Extras)
+            {
+                <div class="pricing-row">
+                    <label>Название<input form="pricing-values" name="Pricing.Extras[@extra.Key].Label" value="@extra.Value.Label" maxlength="100" required></label>
+                    <label>Цена, ₽<input form="pricing-values" name="Pricing.Extras[@extra.Key].Price" type="number" min="0" max="1000000" step="0.01" value="@Site.Number(extra.Value.Price)" required></label>
+                </div>
+            }
+            <p class="fine">Подсветка считается за погонный метр, остальные опции — за комплект.</p>
+            <div class="form-grid">
+                <label>Доставка, ₽<input form="pricing-values" name="Pricing.Delivery" type="number" min="0" max="100000" step="0.01" value="@Site.Number(pricing.Delivery)" required></label>
+                <label>Монтаж, %<input form="pricing-values" name="Pricing.Installation" type="number" min="0" max="50" step="0.01" value="@Site.Number(pricing.Installation)" required></label>
+            </div>
+        </section>
+        <button form="pricing-values">Сохранить названия и цены</button>
+        <p class="fine">Изменение расценок не меняет смету уже отправленных заявок.</p>
+    }
+    @if(Model.Section=="account")
+    {
+        <form class="editor box account-form" method="post" action="/admin/save-account">
+            @Html.AntiForgeryToken()<h2>Изменить данные входа</h2>
+            <label>Логин<input name="Login" value="@Model.Login" minlength="3" maxlength="80" autocomplete="username" required></label>
+            <label>Текущий пароль<input type="password" name="CurrentPassword" maxlength="200" autocomplete="current-password" required></label>
+            <label>Новый пароль<input type="password" name="Password" minlength="10" maxlength="200" autocomplete="new-password" required></label>
+            <button class="button">Сохранить данные входа</button><p class="fine">Вход в панель — по адресу /admin.</p>
+        </form>
+    }
+}
